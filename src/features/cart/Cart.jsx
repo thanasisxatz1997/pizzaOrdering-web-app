@@ -7,6 +7,7 @@ import { getCart } from './cartSlice';
 import { getUsername } from '../user/userSlice';
 import { useDispatch } from 'react-redux';
 import { clearCart } from './cartSlice';
+import EmptyCart from './EmptyCart';
 
 const fakeCart = [
   {
@@ -41,6 +42,8 @@ function Cart() {
     dispatch(clearCart());
   }
 
+  if (!cart.length) return <EmptyCart />;
+
   return (
     <div className="px-4 py-3">
       <LinkButton to="/menu">&larr; Back to menu</LinkButton>
@@ -53,7 +56,7 @@ function Cart() {
       </ul>
       <div className="mt-6 space-x-2">
         <Button to="/order/new">Order pizzas</Button>
-        <Button type="secondary" onClick={handleClearCart}>
+        <Button type="secondary" onClick={() => dispatch(clearCart())}>
           Clear cart
         </Button>
       </div>

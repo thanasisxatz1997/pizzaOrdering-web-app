@@ -10,8 +10,17 @@ const cartSlice = createSlice({
   reducers: {
     addItem(state, action) {
       //payload=newItem
-      state.cart.push(action.payload);
-      console.log(action.payload);
+      //   state.cart.push(action.payload);
+      const ids = state.cart.map((item) => item?.pizzaId);
+      if (ids.includes(action.payload.pizzaId)) {
+        console.log('is included');
+        const item = state.cart.find((item) => item.pizzaId === action.payload);
+        item.quantity++;
+        item.totalPrice = item.quantity * item.unitPrice;
+      } else {
+        console.log('NOT INCLUDED');
+        state.cart.push(action.payload);
+      }
     },
     deleteItem(state, action) {
       //payload=pizzaId
