@@ -21,7 +21,8 @@ function CreateOrder() {
     status: addressStatus,
     position,
     address,
-  } = useSelector((state) => state.user.user);
+    error: errorAddress,
+  } = useSelector((state) => state.user);
   const isLoadingAddress = addressStatus === 'loading';
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
@@ -70,23 +71,31 @@ function CreateOrder() {
             <input
               type="text"
               name="address"
+              defaultValue={address}
               required
               disabled={isLoadingAddress}
               className="input w-full"
             />
+            {addressStatus === 'error' && (
+              <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
+                {errorAddress}
+              </p>
+            )}
           </div>
-          <span className="absolute right-[3px] z-50">
-            <Button
-              disabled={isLoadingAddress}
-              type="small"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(fetchAddress());
-              }}
-            >
-              Get position
-            </Button>
-          </span>
+          {!position.latitude && !position.longtitude && (
+            <span className="absolute right-[3px] top-[3px] z-50 md:right-[5px] md:top-[5px]">
+              <Button
+                disabled={isLoadingAddress}
+                type="small"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(fetchAddress());
+                }}
+              >
+                Get position
+              </Button>
+            </span>
+          )}
         </div>
 
         <div className="mb-12 flex items-center gap-5">
@@ -109,7 +118,7 @@ function CreateOrder() {
 
         <div>
           <input type="hidden" name="cart" value={JSON.stringify(cart)}></input>
-          <Button type="primary" disabled={isSubmitting}>
+          <Button type="primary" disabled={isSubmitting || isLoadingAddress}>
             {isSubmitting
               ? 'Placing Order...'
               : `Order now for ${formatCurrency(totalPrice)}`}
