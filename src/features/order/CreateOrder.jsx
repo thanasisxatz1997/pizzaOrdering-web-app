@@ -23,6 +23,8 @@ function CreateOrder() {
     address,
     error: errorAddress,
   } = useSelector((state) => state.user);
+  console.log('position:');
+  console.log(position);
   const isLoadingAddress = addressStatus === 'loading';
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
@@ -118,6 +120,15 @@ function CreateOrder() {
 
         <div>
           <input type="hidden" name="cart" value={JSON.stringify(cart)}></input>
+          <input
+            type="hidden"
+            name="position"
+            value={
+              position.longitude && position.latitude
+                ? `${position.latitude},${position.longitude}`
+                : ''
+            }
+          ></input>
           <Button type="primary" disabled={isSubmitting || isLoadingAddress}>
             {isSubmitting
               ? 'Placing Order...'
@@ -140,13 +151,14 @@ export async function action({ request }) {
     priority: data?.priority === 'true',
   };
 
+  console.log(order);
+
   const errors = {};
   if (!isValidPhone(order.phone)) {
     errors.phone =
       'Please give us your correct phone number. We might need it to contact you.';
   }
   if (Object.keys(errors).length > 0) return errors;
-
   //If the re are no errors, then create new order and redirect.
   const createdOrder = await createOrder(order);
 
